@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searle Street: 100 Years, 5 Generations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --stone-50: #fafaf9;
+            --stone-100: #f5f5f4;
+            --stone-200: #e7e5e4;
+            --stone-900: #1c1917;
+            --resistance-red: #b91c1c;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--stone-50); color: var(--stone-900); overflow-x: hidden; }
+        h1, h2, h3, .font-heading { font-family: 'Playfair Display', serif; }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            height: 380px;
+        }
+
+        .view-section { transition: opacity 0.3s ease-in-out; }
+        .hidden { display: none; }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid var(--stone-200);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -0.6rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--stone-300);
+            transition: all 0.2s;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            background: var(--resistance-red);
+            border-color: var(--resistance-red);
+            transform: scale(1.3);
+        }
+
+        .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--resistance-red);
+        }
+
+        .abridged-step {
+            position: relative;
+            padding-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 1px solid var(--stone-200);
+        }
+        .abridged-step::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--resistance-red);
+        }
+
+        .article-card {
+            transition: all 0.2s ease;
+            border-left: 0 solid var(--resistance-red);
+        }
+        .article-card:hover {
+            transform: translateY(-2px);
+            border-left-width: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .crisis-stat {
+            border-left: 1px solid var(--stone-700);
+            padding-left: 1rem;
+        }
+
+        .currency-tag {
+            font-family: monospace;
+            padding: 2px 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 0 2px;
+        }
+
+        .dossier-label {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--stone-400);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-stone-50/90 backdrop-blur border-b border-stone-200">
+        <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="font-heading font-bold text-xl tracking-tight flex items-center gap-3">
+                <span class="w-3 h-3 bg-red-700 rounded-full animate-pulse"></span>
+                SEARLE ST. DOSSIER
+            </div>
+            <div class="hidden lg:flex gap-6 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+                <button onclick="showView('overview')" id="nav-overview" class="nav-link active hover:text-red-700 transition-colors">The People</button>
+                <button onclick="showView('timeline')" id="nav-timeline" class="nav-link hover:text-red-700 transition-colors">Timeline</button>
+                <button onclick="showView('power')" id="nav-power" class="nav-link hover:text-red-700 transition-colors">Power Network</button>
+                <button onclick="showView('crisis')" id="nav-crisis" class="nav-link hover:text-red-700 transition-colors">Market Crisis</button>
+                <button onclick="showView('articles')" id="nav-articles" class="nav-link hover:text-red-700 transition-colors font-black">Archive</button>
+            </div>
+            <a href="https://petitions.org.za/p/save-the-district-six-cottage-families-from-eviction-now" target="_blank" rel="noopener noreferrer" class="bg-red-700 text-white text-[10px] font-bold px-4 py-2 rounded-full hover:bg-red-800 transition-all shadow-sm">SIGN PETITION</a>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="py-16 bg-stone-100 border-b border-stone-200">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="inline-block bg-red-700 text-white text-[10px] font-bold px-2 py-1 mb-4 tracking-widest uppercase">File Status: Urgent Eviction (2026)</div>
+            <h1 class="text-5xl md:text-7xl font-bold leading-none mb-6">
+                100 Years, 5 Generations — <br>
+                <span class="text-red-700 italic">1 Last Stand.</span>
+            </h1>
+            <p class="text-xl text-stone-600 font-light leading-relaxed max-w-2xl">
+                A digital archive documenting the struggle of families in District Six against the systematic hollowing out of their ancestral homes.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 py-16">
+
+        <!-- VIEW: PEOPLE ARCHIVE -->
+        <section id="view-overview" class="view-section">
+            <h2 class="font-heading text-4xl font-bold mb-10 text-stone-900 text-center md:text-left">The Resident Archive</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Mildred Savage -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Mildred Savage</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">56 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">69 years of stewardship. Lived on Searle Street her entire life since her parents moved to No. 54 in 1957. Mildred has leased 56 Searle Street since 1993.</p>
+                </div>
+                <!-- Mark Hutton -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Mark Hutton</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">62 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">Lease taken over in 1993. His grandmother moved in in 1938; his mother took the lease in 1977. 87 years of family history.</p>
+                </div>
+                <!-- Sean Savage -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Sean Savage</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">64 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">Grandson of founding Parish members. Invested R45,000 of his own savings into maintaining the property’s integrity in 2005.</p>
+                </div>
+                <!-- Vanessa Collison -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Vanessa Collison</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">58 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">Born at 54 Searle Street in 1969. Resided at 58 Searle Street since 1972 (54 years). A life defined by community resilience.</p>
+                </div>
+                <!-- Janet Bowers -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Janet Bowers</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">54 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">Resident for 48 years. Janet moved into 54 Searle with her mother in 1978 and took over the lease in 1988.</p>
+                </div>
+                <!-- Ita Haricombe -->
+                <div class="p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-xl mb-1">Ita Haricombe</h3>
+                    <p class="text-red-700 text-[10px] font-bold mb-4 tracking-widest uppercase text-xs">60 Searle Street</p>
+                    <p class="text-sm text-stone-600 leading-relaxed">A parish church member and sister of a nun. Moved into 60 Searle in 2009, reinforcing the Parish trust legacy.</p>
+                </div>
+            </div>
+
+            <!-- Abridged Timeline (People Page) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-20">
+                <div class="bg-stone-100 p-10 rounded-3xl border border-stone-200">
+                    <h3 class="font-heading text-2xl font-bold mb-8">In Brief: The Searle Street Story</h3>
+                    <div class="space-y-0">
+                        <div class="abridged-step">
+                            <h4 class="font-bold text-sm text-red-800">1923: Faith & Home</h4>
+                            <p class="text-xs text-stone-600">Roman Catholic Church acquires the land for £1695 to house parishioners.</p>
+                        </div>
+                        <div class="abridged-step">
+                            <h4 class="font-bold text-sm text-red-800">1974: Saving District 6</h4>
+                            <p class="text-xs text-stone-600">Cardinal McCann prevents expropriation, saving the cottages from Apartheid bulldozers.</p>
+                        </div>
+                        <div class="abridged-step">
+                            <h4 class="font-bold text-sm text-red-800">1985: The Moral Trust</h4>
+                            <p class="text-xs text-stone-600">Land is transferred on the understanding it stay a trust for parishioners.</p>
+                        </div>
+                        <div class="abridged-step">
+                            <h4 class="font-bold text-sm text-red-800">2014: Private Dispossession</h4>
+                            <p class="text-xs text-stone-600">The property is sold to a private developer, disregarding generations of care.</p>
+                        </div>
+                        <div class="abridged-step border-none">
+                            <h4 class="font-bold text-sm text-red-800 uppercase">2026: The Final Order</h4>
+                            <p class="text-xs text-stone-600 font-bold">A magistrate rules in favor of a hotel developer; families face removal.</p>
+                        </div>
+                    </div>
+                    <button onclick="showView('timeline')" class="mt-4 text-xs font-bold text-red-700 uppercase tracking-widest hover:underline">Read full timeline →</button>
+                </div>
+
+                <div class="bg-white p-10 rounded-3xl border border-stone-200 shadow-sm">
+                    <h3 class="font-heading text-2xl font-bold mb-6 text-center">Tenure Disparity</h3>
+                    <div class="chart-container">
+                        <canvas id="tenureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: FULL TIMELINE -->
+        <section id="view-timeline" class="view-section hidden">
+            <h2 class="font-heading text-4xl font-bold mb-4">The Complete Chronology</h2>
+            <p class="text-stone-500 mb-12 italic">135 Years: From Colonial Grants to Judicial Displacement.</p>
+            
+            <div class="timeline-container space-y-12">
+                <div class="timeline-item relative">
+                    <div class="timeline-dot"></div>
+                    <span class="dossier-label">1890 — 1923: Foundations</span>
+                    <h4 class="text-xl font-bold mt-1">Colonial Origins</h4>
+                    <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+                        <strong>1890:</strong> Property granted to William Cairncross under Cape Quitrents.<br>
+                        <strong>1902:</strong> Transferred to William James Broadhurst.<br>
+                        <strong>1923:</strong> Father John Rooney purchases property for the Roman Catholic Church for <strong>£1695</strong>.
+                    </p>
+                </div>
+
+                <div class="timeline-item relative">
+                    <div class="timeline-dot"></div>
+                    <span class="dossier-label">1928 — 1943: Stewardship</span>
+                    <h4 class="text-xl font-bold mt-1">Arrival of the Founding Families</h4>
+                    <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+                        <strong>1928:</strong> The Savage grandparents move into No. 64.<br>
+                        <strong>1938:</strong> Mark Hutton’s Grandmother moves into No. 62.<br>
+                        <strong>1943:</strong> Bishop Francis Henneman transfers property to the Sisters of The Holy Cross for £2000.
+                    </p>
+                </div>
+
+                <div class="timeline-item relative">
+                    <div class="timeline-dot border-red-400"></div>
+                    <span class="dossier-label">1974 — 1978: Resistance</span>
+                    <h4 class="text-xl font-bold mt-1">Defying the Group Areas Act</h4>
+                    <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+                        <strong>1974:</strong> Archbishop McCann appeals to the state; properties are exempted from District 6 replanning.<br>
+                        <strong>1978:</strong> Apartheid government attempts to rehouse tenants in Walmer Estate. Landlord asks tenants not to cooperate. Residents obey out of loyalty.
+                    </p>
+                </div>
+
+                <div class="timeline-item relative">
+                    <div class="timeline-dot border-red-700"></div>
+                    <span class="dossier-label">2011 — 2013: The Shift</span>
+                    <h4 class="text-xl font-bold mt-1">Negotiations Collapse</h4>
+                    <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+                        <strong>March 2011:</strong> Landlord introduces written 3-month leases.<br>
+                        <strong>2012:</strong> Negotiator Moerdyk assures residents "all is well."<br>
+                        <strong>Aug 2013:</strong> Landlord suddenly pulls out of trust negotiations. Rawson Properties given mandate to sell.
+                    </p>
+                </div>
+
+                <div class="timeline-item relative">
+                    <div class="timeline-dot bg-red-800"></div>
+                    <span class="dossier-label">2014 — 2026: The Displacement</span>
+                    <h4 class="text-xl font-bold mt-1">The Era of the Private Owner</h4>
+                    <p class="text-sm text-stone-600 mt-2 leading-relaxed">
+                        <strong>1 Sep 2014:</strong> Etienne du Toit purchases cottages for R2.395m.<br>
+                        <strong>2023:</strong> Rates default; residents pay Du Toit's debt themselves.<br>
+                        <strong>14 Jan 2026:</strong> Magistrate grants eviction. Vacate date: 28 February 2026.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: POWER NETWORK -->
+        <section id="view-power" class="view-section hidden">
+            <h2 class="font-heading text-4xl font-bold mb-4">The Power Network</h2>
+            <p class="text-stone-500 mb-12 italic">Mapping the brokers, owners, and developers involved.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="space-y-8">
+                    <h3 class="font-heading text-2xl font-bold text-red-800 border-b border-red-100 pb-2">Owners & Developers</h3>
+                    <div class="p-8 bg-white border border-stone-200 rounded-xl shadow-sm">
+                        <span class="dossier-label">The Owner</span>
+                        <h4 class="font-bold text-xl">Etienne du Toit</h4>
+                        <p class="text-sm text-stone-600 mt-4 leading-relaxed">Resident of Mpumalanga. Director of 107 Dorp Street (Hotel, Stellenbosch) and Sterling PropertyCo.</p>
+                    </div>
+                    <div class="p-8 bg-white border border-stone-200 rounded-xl shadow-sm">
+                        <span class="dossier-label">The Partner</span>
+                        <h4 class="font-bold text-xl">Jeremy Clayton</h4>
+                        <p class="text-sm text-stone-600 mt-4 leading-relaxed">Director of the Presidential Hotel (Sea Point). Co-director of Sterling PropertyCo.</p>
+                    </div>
+                </div>
+                <div class="space-y-8">
+                    <h3 class="font-heading text-2xl font-bold text-stone-800 border-b border-stone-200 pb-2">Institutional Actors</h3>
+                    <div class="p-8 bg-white border border-stone-200 rounded-xl shadow-sm">
+                        <span class="dossier-label">The Sellers</span>
+                        <h4 class="font-bold text-xl">Order of the Holy Cross</h4>
+                        <p class="text-sm text-stone-600 mt-4 leading-relaxed">Moved to sell for financial gain in 2013, citing "apathy" in maintaining the historical trust.</p>
+                    </div>
+                    <div class="p-8 bg-red-50 border border-red-100 rounded-xl shadow-sm">
+                        <span class="dossier-label">The Restriction</span>
+                        <h4 class="font-bold text-lg text-red-900">Legal Condition</h4>
+                        <p class="text-sm text-red-800 italic mt-2">The property must "never be re-zoned for commercial purposes or utilised for any commercial purposes."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: MARKET CRISIS -->
+        <section id="view-crisis" class="view-section hidden">
+            <h2 class="font-heading text-4xl font-bold mb-6">Group Areas Act 2.0</h2>
+            <p class="text-xl text-stone-600 font-light mb-12 max-w-4xl">Displacement in Cape Town is now driven by <strong>unregulated financialisation</strong>.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                <div class="lg:col-span-2 p-10 bg-stone-900 text-white rounded-3xl relative overflow-hidden">
+                    <h3 class="font-heading text-3xl mb-6 text-red-500 italic">The Currency Inequity</h3>
+                    <p class="text-stone-300 mb-8 leading-relaxed text-lg">Local residents are defenseless against international buying power. Salaries in Rands are decimated by <span class="currency-tag">€ Euro</span>, <span class="currency-tag">$ Dollar</span>, and <span class="currency-tag">£ Pound</span>.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="crisis-stat"><span class="text-xs uppercase tracking-widest text-stone-500">Capital</span><div class="text-lg font-bold mt-1">Global Inflow</div></div>
+                        <div class="crisis-stat"><span class="text-xs uppercase tracking-widest text-stone-500">Squeeze</span><div class="text-lg font-bold mt-1 text-red-500">Rand Devaluation</div></div>
+                        <div class="crisis-stat"><span class="text-xs uppercase tracking-widest text-stone-500">Result</span><div class="text-lg font-bold mt-1">Local Purge</div></div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="p-6 bg-white border-l-4 border-red-700 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">Bromwell Street</h3>
+                        <p class="text-xs text-stone-500 italic">Families evicted for luxury redevelopment they cannot afford.</p>
+                    </div>
+                    <div class="p-6 bg-white border-l-4 border-red-700 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">Shelly Road</h3>
+                        <p class="text-xs text-stone-500 italic">Expulsion via "Micro-Loft" developments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-stone-100 border border-stone-200 p-10 rounded-3xl">
+                <h3 class="font-heading text-2xl font-bold mb-6">Landmark Case Study: D6 Victory</h3>
+                <p class="text-stone-700 text-sm leading-relaxed">Recently, the High Court prevented the second eviction of a 78-year-old District Six survivor, ruling that developers must prioritize affordable housing and racial redress.</p>
+            </div>
+        </section>
+
+        <!-- VIEW: ARTICLE ARCHIVE -->
+        <section id="view-articles" class="view-section hidden">
+            <h2 class="font-heading text-4xl font-bold mb-4">The Article Archive</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">Cape Argus • Jan 2026</span><h3 class="font-bold text-lg">Court orders families to vacate historic cottages by February 28</h3></div>
+                    <a href="https://iol.co.za/capeargus/news/2026-01-16-court-orders-district-six-families-to-vacate-historic-cottages-by-february-28/" target="_blank" class="text-xs font-bold text-red-700 underline">Read Report</a>
+                </div>
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">Moneyweb • Jan 2026</span><h3 class="font-bold text-lg">District Six families ordered to vacate Searle Street cottages</h3></div>
+                    <a href="https://www.moneyweb.co.za/news/south-africa/district-six-families-ordered-to-vacate-searle-street-cottages/" target="_blank" class="text-xs font-bold text-red-700 underline">Read Report</a>
+                </div>
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">News24 • Opinion</span><h3 class="font-bold text-lg">Group Areas Act 2 back in effect in Cape Town</h3></div>
+                    <a href="https://www.news24.com/opinions/columnists/brett-herron-group-areas-act-2-back-in-effect-in-cape-town-20251022-0816" target="_blank" class="text-xs font-bold text-red-700 underline">Read Opinion</a>
+                </div>
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">Ndifuna Ukwazi • Landmark Case</span><h3 class="font-bold text-lg">Affordability and Racial Redress in District Six</h3></div>
+                    <a href="https://nu.org.za/ndifuna-ukwazi-seeks-intervention-in-landmark-district-six-case-to-advocate-for-racial-redress-and-affordable-housing/" target="_blank" class="text-xs font-bold text-red-700 underline">Read Report</a>
+                </div>
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">GroundUp • Analysis</span><h3 class="font-bold text-lg">Will there be any justice for District Six families?</h3></div>
+                    <a href="https://groundup.org.za/article/insult-to-injury-will-there-be-any-justice-for-district-six-families/" target="_blank" class="text-xs font-bold text-red-700 underline">Read Report</a>
+                </div>
+                <div class="article-card p-6 bg-white border border-stone-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div><span class="text-[10px] font-bold text-red-700 tracking-widest uppercase">Southern Suburbs Tatler • Jan 2026</span><h3 class="font-bold text-lg">Eviction sparks community fears</h3></div>
+                    <a href="https://southernsuburbstatler.co.za/news/2026-01-27-court-orders-eviction-of-long-time-district-six-residents-sparking-community-fears/" target="_blank" class="text-xs font-bold text-red-700 underline">Read Report</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-white py-24">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="font-heading text-5xl mb-8">"Siyahlala!" — We Will Stay.</h2>
+            
+            <div class="flex flex-col md:flex-row justify-center gap-6 mb-8">
+                <a href="https://petitions.org.za/p/save-the-district-six-cottage-families-from-eviction-now" target="_blank" rel="noopener noreferrer" class="bg-red-700 hover:bg-red-600 px-10 py-4 rounded-full font-bold transition-all shadow-lg text-center">Sign the Petition</a>
+                <button onclick="showView('crisis')" class="border border-stone-700 hover:border-white px-10 py-4 rounded-full font-bold transition-all">Demand Urban Justice</button>
+            </div>
+
+            <!-- Social Media Links -->
+            <div class="flex justify-center gap-8 mb-16 text-stone-400">
+                <a href="https://www.facebook.com/profile.php?id=61586988705896" target="_blank" class="hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                    <span class="text-xs font-bold uppercase tracking-widest">Facebook</span>
+                </a>
+                <a href="https://www.tiktok.com/@savesearle" target="_blank" class="hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-1.13-.31-2.34-.25-3.41.33-.71.38-1.28 1.03-1.58 1.74-.45.95-.39 2.14.17 3.03.51.8 1.34 1.37 2.25 1.56.91.19 1.89.06 2.69-.43.81-.49 1.36-1.35 1.54-2.29.18-1.02.03-2.12.02-3.17V0z"/></svg>
+                    <span class="text-xs font-bold uppercase tracking-widest">TikTok</span>
+                </a>
+                <a href="https://savesearlestreet.substack.com/" target="_blank" class="hover:text-white transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.539 8.242H1.46V5.406h21.079v2.836zm0 5.225H1.46V10.63h21.079v2.837zM1.46 15.854h21.079v2.837H1.46v-2.837z"/></svg>
+                    <span class="text-xs font-bold uppercase tracking-widest">Substack</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-[10px] uppercase tracking-widest text-stone-500 font-bold border-t border-stone-800 pt-10">
+                <div>Sean Savage</div>
+                <div>Mildred Savage</div>
+                <div>Mark Hutton</div>
+                <div>Vanessa Collison</div>
+            </div>
+            <p class="mt-20 text-stone-600 text-[10px] tracking-widest uppercase text-center italic">Searle Street Resistance Digital Record • 135 Years of Community • 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initCharts() {
+            const canvas = document.getElementById('tenureChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Hutton Family', 'Savage Family', 'Vanessa Collison', 'Janet Bowers', 'Du Toit (Owner)'],
+                    datasets: [{
+                        label: 'Years of Commitment',
+                        data: [87, 69, 54, 48, 3],
+                        backgroundColor: ['#b91c1c', '#b91c1c', '#b91c1c', '#b91c1c', '#e7e5e4'],
+                        borderRadius: 6,
+                        barThickness: 25
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw} Years` } }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                        y: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } }
+                    }
+                }
+            });
+        }
+        window.onload = initCharts;
+    </script>
+</body>
+</html>
